@@ -1,3 +1,4 @@
+
 f=open("input.txt","r")
 lines=[ l.strip() for l in f.readlines()]
 
@@ -48,17 +49,20 @@ for line in lines:
             post_file_size(int(line_parts[0]))
 
 less_than_100000 = {k: v for k, v in dir_sizes.items() if v<=100000}
+size_of_disk=70000000
+size_needed=30000000
 
 print(sum(less_than_100000.values()))
-available_size = 70000000 - dir_sizes["/"]  
-print("size_needd= %d"%available_size)
-extra_size_needed=30000000 - available_size
+size_of_root = dir_sizes["/"]
+print("size_of_root=%d" % size_of_root)
+available_size = size_of_disk - size_of_root  
+print("available_size= %d"%available_size)
+extra_size_needed=size_needed - available_size
 print("size_needd= %d"%extra_size_needed)
 
-candidates = {k: v for k, v in dir_sizes.items() if v>extra_size_needed}
+candidates = {k: v for k, v in dir_sizes.items() if v >= extra_size_needed}
+sorted_candidates=sorted(candidates.items(), key=lambda x:x[1])
 
-
-
-print(candidates)
+print(sorted_candidates[0:3])
 
 
