@@ -10,37 +10,36 @@ tail_pos=head_pos
 tail_pos_set=set()
 tail_pos_set.add(tail_pos)
 
+moves={
+    (-2,1): (-1,1),
+    (-1,2): (-1,1),
+    (0,2): (0,1),
+    (1,2): (1,1),
+    (2,1): (1,1),
+    (2,0): (1,0),
+    (2,-1): (1,-1),
+    (1,-2): (-1,-1),
+    (0,-2): (0,-1),
+    (-1,-2): (-1,-1),
+    (-2,-1): (-1,-1),
+    (-2,0): (-1,0)
+}
+
 def move_tail(head_pos,tail_pos):
     diff_vect=(head_pos[0]-tail_pos[0],head_pos[1]-tail_pos[1])
-    if abs(diff_vect[0])<2 and abs(diff_vect[1]<2):
-        return tail_pos
-
-    new_x_pos=tail_pos[0]
-    new_y_pos=tail_pos[1]
-
-    if diff_vect[0] == 2:
-        new_x_pos += 1
-        new_y_pos = head_pos[1]
-            
-    if diff_vect[0] == -2:
-        new_x_pos -= 1
-        new_y_pos = head_pos[1]
-
-    if diff_vect[1] == 2:
-        new_y_pos += 1
-        new_x_pos = head_pos[0]
-
-    if diff_vect[1] == -2:
-        new_y_pos -= 1  
-        new_x_pos = head_pos[0]
-
-    return (new_x_pos,new_y_pos)
+    if not diff_vect in moves:
+        return (tail_pos)
+    else:
+        move=moves[diff_vect]
+        print(f'head_pos={head_pos} tail_pos={tail_pos} move={move}')
+        return (tail_pos[0] + move[0],tail_pos[1]+move[1])
 
 
 for step in steps:
     print()
     print(f'move = {step}')
     for idx in range(step[1]):
+        print(f'idx={idx}')
         if step[0] == "R":
             head_pos=(head_pos[0]+1,head_pos[1])
         elif step[0] == "U":
@@ -55,9 +54,13 @@ for step in steps:
         tail_pos=move_tail(head_pos,tail_pos)
         print(f'new_tail_pos={tail_pos}')
         tail_pos_set.add(tail_pos)
+    sanity_check=(head_pos[0]-tail_pos[0],head_pos[1]-tail_pos[1])
+    if abs(sanity_check[0])>1 or abs(sanity_check[1])>1:
+        print(f'head={head_pos} tail={tail_pos} sanity={sanity_check}')
+        raise Exception("NOT SANE!!!!")
 
 
-print("head_pos")
+print("=======head_pos")
 print(str(head_pos))
 print("tail_pos")
 print( str(tail_pos))
