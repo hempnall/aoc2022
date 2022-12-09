@@ -18,7 +18,7 @@ moves={
     (2,1): (1,1),
     (2,0): (1,0),
     (2,-1): (1,-1),
-    (1,-2): (-1,-1),
+    (1,-2): (1,-1),
     (0,-2): (0,-1),
     (-1,-2): (-1,-1),
     (-2,-1): (-1,-1),
@@ -31,7 +31,7 @@ def move_tail(head_pos,tail_pos):
         return (tail_pos)
     else:
         move=moves[diff_vect]
-        print(f'head_pos={head_pos} tail_pos={tail_pos} move={move}')
+        print(f'head_pos={head_pos} tail_pos={tail_pos} diff_vect={diff_vect} move={move}')
         return (tail_pos[0] + move[0],tail_pos[1]+move[1])
 
 
@@ -50,7 +50,7 @@ for step in steps:
             head_pos=(head_pos[0]-1,head_pos[1])
         else:
             raise Exception("invalid command")
-        print(f'head_pos={head_pos} tail_pos={tail_pos}')
+        print(f'new_head_pos={head_pos} tail_pos={tail_pos}')
         tail_pos=move_tail(head_pos,tail_pos)
         print(f'new_tail_pos={tail_pos}')
         tail_pos_set.add(tail_pos)
