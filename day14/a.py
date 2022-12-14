@@ -1,4 +1,4 @@
-f = open("sample.txt","r")
+f = open("input.txt","r")
 lines = [ l.strip() for l in f.readlines() ]
 sand_source=(500,0)
 
@@ -21,13 +21,15 @@ def get_cave_bounds(includeSandSource=False):
 def render_cave():
     cave_bounds=get_cave_bounds(True)
     print(f'horiz_range={cave_bounds[0]} vert_range={cave_bounds[1]} max_depth={max_depth}')
-    for y_idx in range(cave_bounds[1][0],cave_bounds[1][1]+1):
+    for y_idx in range(cave_bounds[1][0],cave_bounds[1][1]+4):
         for x_idx in range(cave_bounds[0][0],cave_bounds[0][1]+1):
             cave_loc=(x_idx,y_idx)
             if cave_loc in cave_map:
                 print(cave_map[cave_loc],end="")
             elif cave_loc == sand_start:
                 print("+",end="")
+            elif y_idx==(max_depth+2):
+                print("#",end="")
             else:
                 print(".",end="")
         print()
@@ -57,28 +59,30 @@ def construct_cave():
         for idx in range(len(coords)-1):
             drawline(coords[idx],coords[idx+1])
 
+def coord_in_cavemap(coord):
+    return (coord[1]==max_depth+2) or coord in cave_map 
+
 # returns None if drops to infinity
 def next_sand(coord):
     down=(coord[0],coord[1]+1)
     downleft=(coord[0]-1,coord[1]+1)
     downright=(coord[0]+1,coord[1]+1)
-    if coord[1] > max_depth:
-        return None
-    if not down in cave_map:
+    if not coord_in_cavemap(down):
         return next_sand(down)
-    elif not downleft in cave_map:
+    elif not coord_in_cavemap(downleft):
         return next_sand(downleft)
-    elif not downright in cave_map:
+    elif not coord_in_cavemap(downright):
         return next_sand(downright)
     else:
         return coord
         
 
 construct_cave()
-for i in range(50):
-    sand1=next_sand(sand_start)
-    if not sand1 is None:
-        cave_map[sand1]='o'
+
+while not sand_start in cave_map:
+    sand_loc=next_sand(sand_start)
+    cave_map[sand_loc]='o'
+
 render_cave()
-sand2=next_sand((0,0))
-print(sand2)
+answer = sum(1 for v in cave_map.values() if v =="o")
+print(answer)
