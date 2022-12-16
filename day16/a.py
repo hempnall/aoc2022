@@ -1,4 +1,4 @@
-is_real=False
+is_real=True
 
 f=open("sample.txt","r")
 lines=[ l.strip() for l in f.readlines() ]
@@ -23,15 +23,19 @@ def construct_graph(lines):
 def simplify_graph(complex_graph):
     non_zero_nodes=[ k for k,v in complex_graph.items() if v["rate"] > 0 ]
     non_zero_nodes.append("AA")
-    def set_distance(distances,s,e,d):
+    def set_distance_sub(distances,s,e,d):
         if not s in distances:
-            distances[s]={ e: int(d)}
+            distances[s]={e:d}
         else:
-            if e in distances[s]:
+            if not e in distances[s]:
+                distances[s][e]=d
+            else:
                 if d < distances[s][e]:
-                    distances[s][e]=int(d)
-            else: 
-                distances[s][e]=int(d)
+                    distances[s][e] = d
+    def set_distance(distances,s,e,d):
+        set_distance_sub(distances,s,e,d)
+        set_distance_sub(distances,e,s,d)
+
     def get_distance(distances,s,e):
         if s < e:
             x,y=s,e
@@ -58,12 +62,13 @@ def simplify_graph(complex_graph):
                         set_distance(distances,orig_s,tunnel,distance)
                         return distance 
                     return None
+                return None # reached dead end
             # return none if nowehere to go - i.e. wind back
             return None
 
     distances={  }
-    for node_idx_s in non_zero_nodes:
-        for node_idx_e in non_zero_nodes:
+    for node_idx_s in non_zero_nodes[:1]:
+        for node_idx_e in non_zero_nodes[1:2]:
             if node_idx_s == node_idx_e:
                 continue
             else:
