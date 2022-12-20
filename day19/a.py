@@ -49,6 +49,19 @@ blueprints={
     idx: blueprint(l) for idx, l in enumerate(lines)
 }
 
+def get_cache_key(minute,invent,robots):
+    return (
+        minute,
+        invent["ore"],
+        invent["clay"],
+        invent["obsidian"],
+        invent["geode"],
+        robots["ore"],
+        robots["clay"],
+        robots["obsidian"],
+        robots["geode"],
+    )
+
 def is_robot_affordable(cost,invent):
     for k,v in cost.items():
         if not k in invent:
@@ -83,6 +96,10 @@ def robot_caps_for_blueprint(blueprint):
     robot_caps["geode"]=9999
     return robot_caps
 
+
+minute_caches = {}
+
+
 def get_max_geodes(
     blueprint,
     minute,
@@ -110,22 +127,28 @@ def get_max_geodes(
         elif start_robots[robot] * time_remaining + start_inventory[robot] < caps[robot] * time_remaining:
             if is_robot_affordable(blueprint[robot],start_inventory):
                 next_robots,next_invent=purchase_robot(start_robots,new_invent,robot,blueprint[robot])
-                get_max_geodes(
-                    blueprint,
-                    minute+1,
-                    next_invent,
-                    next_robots,
-                    caps
-                )
+                cache_key=get_cache_key(minute+1,next_invent,next_robots)
+                if not cache_key in minute_caches:
+                    get_max_geodes(
+                        blueprint,
+                        minute+1,
+                        next_invent,
+                        next_robots,
+                        caps
+                    )
+                    minute_caches[cache_key]=max_geodes
                 if robot in ["ore","geode"]:
                     break
         else:
             continue
     
 options=[]
+mgs=[0] * 3
 accum=0
-for idx ,line in enumerate(lines[:3]):
+
+for idx ,line in enumerate(lines[1:3]):
     max_geodes=0
+    minute_caches={}
     caps=robot_caps_for_blueprint(blueprint(line))
     print(caps)
     get_max_geodes(
@@ -136,7 +159,9 @@ for idx ,line in enumerate(lines[:3]):
         caps
     )
     print(max_geodes)
+    mgs[idx]=max_geodes
     accum += ((idx+1) * max_geodes)
 
 print(accum)
+print(25 * mgs[1] * mgs[2])
     
