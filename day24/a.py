@@ -147,24 +147,30 @@ move_st=[(0,0)]
 destinations=[end_loc,start_pos,end_loc]
 current_dest=0
 
-search_maze(
-    end_loc,
-    221+257,
-    start_pos,
-    move_st,
-    0)
-
-print(f'dist={221 + 257 + min_time-1}')
+for j in range(0,3):
+    print(f'{j}')
+    min_time=None
+    move_st=[(0,0)]
+    dead_end_cache=set()
+    search_maze(
+        end_loc if j in [0,2] else start_pos,
+        current_minute,
+        start_pos if j in [0,2] else end_loc,
+        move_st,
+        0)
+    current_minute+=(min_time-(1+j))
+    print(current_minute)
+print(f'dist={min_time}')
 # total=min_time-1
 # min_time=None
 # move_st=[(0,0)]
-search_maze(
-    start_pos,
-    221,
-    end_loc,
-    move_st,
-    0)
-print(min_time-1)
+# search_maze(
+#     start_pos,
+#     221,
+#     end_loc,
+#     move_st,
+#     0)
+# print(min_time-1)
 # move_st=[(0,0)]
 # total+=(min_time-1)
 # print(f'dist={total}')

@@ -1,7 +1,7 @@
 from setuptools import SetuptoolsDeprecationWarning
 
 
-f = open("input.txt","r")
+f = open("day25/input.txt","r")
 lines=[ l.strip() for l in f.readlines()]
 nums={
     '0':0,
@@ -33,25 +33,27 @@ def convert_to_decimal(line,power_of_5=0):
     num=nums[line[-1]]
     return (num * (5 ** power_of_5)) + convert_to_decimal(line[:-1],power_of_5+1)
 
-def convert_to_snafu(num):
-    digits=numberToBase(num,5)
-    snafu_chars=[]
-    for power in range(len(digits)):
-        snafu_conv=snafus[digits[power]]
-        snafu_chars.append(snafu_conv[0])
-        if power < len(digits)-1:
-            digits[power+1] += snafu_conv[1]
+def convert_to_snafu(digits,curr_chars):
+    if len(digits)==0:
+        return ''.join(curr_chars[::-1])
+    else:
+        snafu_conv=snafus[digits[0]]
+        curr_chars.append(snafu_conv[0])
+        if len(digits)>1:
+            digits[1] += snafu_conv[1]
         else:
             if snafu_conv[1]==1:
-                snafu_chars.append(str(snafu_conv[1]))
-    return ''.join(snafu_chars[::-1])
+                curr_chars.append(str(snafu_conv[1]))
+        return convert_to_snafu(digits[1:],curr_chars)
 
 conversions=[ convert_to_decimal(l) for l in lines]
 print(conversions)
 print(sum(conversions))
-back_to_snafu=[ convert_to_snafu(l) for l in conversions]
+back_to_snafu=[ convert_to_snafu(numberToBase(l,5),[]) for l in conversions]
 print(back_to_snafu)
-print(convert_to_snafu(sum(conversions)))
+sum_conversions=sum(conversions)
+digits=numberToBase(sum_conversions,5)
+print(convert_to_snafu(digits,[]))
 
 
 
